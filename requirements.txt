@@ -1,0 +1,8 @@
+python-dateutil
+Flask
+RPi.GPIO>=0.6.3
+git+https://github.com/adafruit/Adafruit_Python_SSD1306.git
+pillow==4.1.0
+cffi>=1.10.0
+pigpio
+adafruit-io
