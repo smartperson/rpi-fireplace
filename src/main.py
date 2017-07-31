@@ -36,7 +36,7 @@ def message(client, feed_id, payload):
     # Message function will be called when a subscribed feed has a new value.
     # The feed_id parameter identifies the feed, and the payload parameter has
     # the new value.
-    print('Feed {0} received new value: {1}'.format(feed_id, payload))
+    print('Feed {0} received value: {1}'.format(feed_id, payload))
     if payload == 'OFF':
         GPIO.output(18, GPIO.LOW)
     else if payload == 'ON':
