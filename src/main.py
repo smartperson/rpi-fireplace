@@ -39,7 +39,7 @@ def message(client, feed_id, payload):
     print('Feed {0} received new value: {1}'.format(feed_id, payload))
     if payload == 'OFF':
         GPIO.output(18, GPIO.LOW)
-    else if payload == 'ON':
+    elif payload == 'ON':
         GPIO.output(18, GPIO.HIGH)
 
 
