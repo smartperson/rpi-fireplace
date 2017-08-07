@@ -60,6 +60,9 @@ def sendLEDBit(bitValue):
     time.sleep(0.0001)
     GPIO.output(TLC5916_SDI, bitValue)
     GPIO.output(TLC5916_CLK, GPIO.HIGH)
+    
+def my_callback(channel):  
+    print "Rising edge detected on port channel {channel}" 
 
 # Create an MQTT client instance.
 client = MQTTClient(os.environ.get('AIO_USERNAME'), os.environ.get('AIO_KEY'))
@@ -77,7 +80,12 @@ GPIO.setup(18, GPIO.OUT)
 GPIO.setup(TLC5916_SDI, GPIO.OUT)
 GPIO.setup(TLC5916_CLK, GPIO.OUT)
 GPIO.setup(TLC5916_LATCH, GPIO.OUT)
+GPIO.setup(23, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)  
+GPIO.setup(24, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)  
 GPIO.output(18, GPIO.LOW)
+
+GPIO.add_event_detect(23, GPIO.RISING, callback=my_callback)  
+GPIO.add_event_detect(24, GPIO.RISING, callback=my_callback)  
 
 # Start a message loop that blocks forever waiting for MQTT messages to be
 # received.  Note there are other options for running the event loop like doing
