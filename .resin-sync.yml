@@ -1,0 +1,8 @@
+uuid: bd0c182
+destination: /usr/src/app
+before: echo syncing
+after: echo sync complete
+ignore:
+  - .git
+  - node_modules/
+local_resinos: {}

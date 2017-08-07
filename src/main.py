@@ -15,6 +15,9 @@ import RPi.GPIO as GPIO
 from Adafruit_IO import MQTTClient
 
 FEED_ID = 'fireplace-burner-status'
+TLC5916_LATCH = 17
+TLC5916_CLK   = 27
+TLC5916_SDI   = 22
 
 # Define callback functions which will be called when certain events happen.
 def connected(client):
@@ -29,7 +32,7 @@ def connected(client):
 def disconnected(client):
     # Disconnected function will be called when the client disconnects.
     print('Disconnected from Adafruit IO! Reconnecting…')
-    time.sleep(5)
+    time.sleep(1)
     client.connect()
 
 def message(client, feed_id, payload):
@@ -37,11 +40,26 @@ def message(client, feed_id, payload):
     # The feed_id parameter identifies the feed, and the payload parameter has
     # the new value.
     print('Feed {0} received value: {1}'.format(feed_id, payload))
+    burnerBit = GPIO.LOW
     if payload == 'OFF':
-        GPIO.output(18, GPIO.LOW)
-    else if payload == 'ON':
-        GPIO.output(18, GPIO.HIGH)
+        burnerBit = GPIO.LOW
+    elif payload == 'ON':
+        burnerBit = GPIO.HIGH
+    GPIO.output(18, burnerBit)
+    for index in xrange(8):
+        sendLEDBit(burnerBit)
+        time.sleep(0.0001)
+    GPIO.output(TLC5916_CLK, GPIO.LOW)
+    time.sleep(0.0001)
+    GPIO.output(TLC5916_LATCH, GPIO.HIGH)
+    time.sleep(0.0001)
+    GPIO.output(TLC5916_LATCH, GPIO.LOW)
 
+def sendLEDBit(bitValue):
+    GPIO.output(TLC5916_CLK, GPIO.LOW)
+    time.sleep(0.0001)
+    GPIO.output(TLC5916_SDI, bitValue)
+    GPIO.output(TLC5916_CLK, GPIO.HIGH)
 
 # Create an MQTT client instance.
 client = MQTTClient(os.environ.get('AIO_USERNAME'), os.environ.get('AIO_KEY'))
@@ -56,6 +74,9 @@ client.connect()
 
 GPIO.setmode(GPIO.BCM)
 GPIO.setup(18, GPIO.OUT)
+GPIO.setup(TLC5916_SDI, GPIO.OUT)
+GPIO.setup(TLC5916_CLK, GPIO.OUT)
+GPIO.setup(TLC5916_LATCH, GPIO.OUT)
 GPIO.output(18, GPIO.LOW)
 
 # Start a message loop that blocks forever waiting for MQTT messages to be
